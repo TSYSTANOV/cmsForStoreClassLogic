@@ -10,6 +10,18 @@ class API {
       return response.json();
     });
   }
+  getCategory(){
+    return fetch(`${this.BASE_URL}/api/category`).then(response => response.json())
+  }
+  setNewGoods(body){
+    fetch(`${this.BASE_URL}/api/goods`,{
+      method:'POST',
+      body:JSON.stringify(body)
+    }).then(response=>console.log(response))
+  }
+  get BASE_URL(){
+    return this.BASE_URL
+  }
 }
 
 const API_component = new API("http://localhost:3024");

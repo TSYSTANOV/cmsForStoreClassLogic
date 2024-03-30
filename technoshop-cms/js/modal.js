@@ -1,3 +1,5 @@
+import { API_component } from "./api.js";
+
 class Modal {
   ROOT_element;
   constructor(root) {
@@ -104,19 +106,54 @@ class Modal {
     </button>
   </div>
     `;
-
+    form.addEventListener('submit',()=>{
+      this.formListener(form)
+    })
     modalDialog.append(form);
     modalWindow.append(modalDialog);
-
     document.querySelector(this.ROOT_element).prepend(modalWindow);
+    this.addListenerModalWindow(modalWindow)
+    form.image.addEventListener('change',async()=>{
+        form.imagesave.value = await this.toBase64(form.image.files[0])
+    })
+
+  }
+  formListener(form){
+    event.preventDefault()
+    const data = new FormData(form)
+    const newGood = Object.fromEntries(data)
+    newGood.image = a.imagesave
+    delete newGood.imagesave
+    API_component.setNewGoods(newGood)
   }
   removeModal(HTMLelement) {
     HTMLelement.remove();
+  }
+  addListenerModalWindow(HTMLelement){
+    HTMLelement.addEventListener('click',()=>{
+      if(event.target.classList.contains('modals') || event.target.classList.contains('btn-close')){
+        this.removeModal(HTMLelement)
+      }
+    })
   }
   addListener(HTMLelement) {
     document.querySelector(HTMLelement).addEventListener("click", () => {
       this.renderModal();
     });
+  }
+  toBase64(image){
+    return new Promise((resolve, reject) => {
+      const file = new FileReader()
+      file.addEventListener('loadend',()=>{
+        this.showPreview(file.result)
+        resolve(file.result)
+      })
+      file.readAsDataURL(image)
+    })
+  }
+  showPreview(src){
+    document.querySelector('.preview').style.display = 'block'
+    document.querySelector('.preview').src = src
   }
 }
 

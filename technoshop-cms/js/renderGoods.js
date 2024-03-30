@@ -11,7 +11,6 @@ class Goods {
       document.querySelector(rootElement).innerHTML = "";
     }
     const dataGoods = await API_component.getAllGoods(this.page_number);
-    console.log(dataGoods);
     this.pageTotal = dataGoods.pages;
     const goods = dataGoods.goods.map((elem) => {
       const item = document.createElement("tr");
@@ -55,6 +54,32 @@ class Goods {
     btnNext.className = "page-item direction-next";
     btnNext.innerHTML = `<a class="page-link" href="#">Next</a>`;
     pagination.addEventListener("click", () => {
+      if(event.target.dataset.page){
+        pagination
+          .querySelector(`[data-page="${this.page_number}"]`)
+          .parentNode.classList.remove("active");        
+        event.target.parentNode.classList.add("active");
+        this.page_number = +event.target.dataset.page
+        if(this.page_number > 1){
+          pagination
+          .querySelector(".direction-prev")
+          .classList.remove("disabled");
+        }else{
+          pagination
+          .querySelector(".direction-prev")
+          .classList.add("disabled");
+        }
+        if(this.page_number === this.pageTotal){
+          pagination
+          .querySelector(".direction-next")
+          .classList.add("disabled");
+        }else{
+          pagination
+          .querySelector(".direction-next")
+          .classList.remove("disabled");
+        }
+        this.renderGoods();
+      }
       if (event.target.parentNode.classList.contains("direction-next")) {
         pagination
           .querySelector(".direction-prev")
