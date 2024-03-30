@@ -1,3 +1,5 @@
+import { API_component } from "./api.js";
+import { MODAL_component } from "./modal.js";
 import { GOODS_component } from "./renderGoods.js";
 class Table {
   ROOT_element;
@@ -49,8 +51,19 @@ class Table {
     tableBody.className = "table-group-divider table-goods";
     table.append(tableBody);
     GOODS_component.renderGoods(tableBody);
-
     document.querySelector(this.ROOT_element).prepend(table);
+    this.addListener(table)
+  }
+  addListener(HTMLelement){
+    HTMLelement.addEventListener('click',async ()=>{
+      if(event.target.closest('.btn-delete')){
+
+        API_component.deleteProduct(event.target.closest('tr').dataset.id)
+        return
+      }
+      const data = await API_component.getSingleGood(event.target.parentNode.dataset.id)
+      MODAL_component.renderModal(data)
+    })
   }
 }
 

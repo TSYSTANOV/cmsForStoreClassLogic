@@ -106,15 +106,29 @@ class Modal {
     </button>
   </div>
     `;
-    form.addEventListener('submit',()=>{
-      this.formListener(form)
-    })
+
     modalDialog.append(form);
     modalWindow.append(modalDialog);
     document.querySelector(this.ROOT_element).prepend(modalWindow);
+    
     this.addListenerModalWindow(modalWindow)
     form.image.addEventListener('change',async()=>{
         form.imagesave.value = await this.toBase64(form.image.files[0])
+    })
+    if(good){
+      form.dataset.productId = good.id
+      form.title.value = good.title
+      form.category.value = good.category
+      form.display.value = good.display
+      form.description.value = good.description
+      form.price.value = good.price
+      form.imagesave.value = good.image
+      this.showPreview(good.image, API_component.BASE_URL)
+      form.querySelector('.modal-submit-btn').textContent = 'Изменить товар'
+    }
+    form.addEventListener('submit',()=>{
+      event.preventDefault()
+      this.formListener(form)
     })
 
   }
@@ -122,9 +136,15 @@ class Modal {
     event.preventDefault()
     const data = new FormData(form)
     const newGood = Object.fromEntries(data)
-    newGood.image = a.imagesave
+    newGood.image = newGood.imagesave
     delete newGood.imagesave
-    API_component.setNewGoods(newGood)
+
+    if(form.dataset.productId){
+      API_component.updateProduct(form.dataset.productId, newGood)
+    }else{
+      API_component.setNewGoods(newGood)
+    }
+
   }
   removeModal(HTMLelement) {
     HTMLelement.remove();
@@ -151,9 +171,9 @@ class Modal {
       file.readAsDataURL(image)
     })
   }
-  showPreview(src){
+  showPreview(src, BASE_URL){
     document.querySelector('.preview').style.display = 'block'
-    document.querySelector('.preview').src = src
+    document.querySelector('.preview').src = BASE_URL ? BASE_URL+'/'+src : src
   }
 }
 
